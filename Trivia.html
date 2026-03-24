@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trivia Interactiva</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.container {
+  background: rgba(0,0,0,0.7);
+  padding: 20px;
+  border-radius: 15px;
+  width: 400px;
+  text-align: center;
+}
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #ffcc00;
+  font-weight: bold;
+}
+button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+.option {
+  background: #eee;
+  color: black;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.correct { background: #4CAF50 !important; color: white; }
+.wrong { background: #f44336 !important; color: white; }
+</style>
+</head>
+<body>
+<div class="container animate__animated animate__fadeIn">
+  <h2 id="question">Pregunta</h2>
+  <div id="options"></div>
+  <button id="nextBtn" disabled>Siguiente</button>
+</div>
+
+<script>
+const quiz = [
+{q:"¿Capital de Francia?", o:["Madrid","París","Roma","Berlín"], a:1},
+{q:"¿Planeta rojo?", o:["Tierra","Marte","Venus","Júpiter"], a:1},
+{q:"¿2+2?", o:["3","4","5","6"], a:1},
+{q:"¿Océano más grande?", o:["Atlántico","Índico","Pacífico","Ártico"], a:2},
+{q:"¿Autor de Don Quijote?", o:["Shakespeare","Cervantes","Neruda","Borges"], a:1},
+{q:"¿Gas que respiramos?", o:["CO2","Oxígeno","Hidrógeno","Helio"], a:1},
+{q:"¿Animal más rápido?", o:["León","Guepardo","Tigre","Elefante"], a:1},
+{q:"¿Lenguaje web?", o:["Python","HTML","C++","Java"], a:1},
+{q:"¿Continente más grande?", o:["Europa","África","Asia","Oceanía"], a:2},
+{q:"¿Color del sol?", o:["Azul","Rojo","Amarillo","Verde"], a:2}
+];
+
+let index = 0;
+let score = 0;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+
+function loadQuestion() {
+  nextBtn.disabled = true;
+  optionsEl.innerHTML = "";
+  let current = quiz[index];
+  questionEl.textContent = current.q;
+
+  current.o.forEach((opt,i)=>{
+    let div = document.createElement("div");
+    div.textContent = opt;
+    div.classList.add("option","animate__animated","animate__fadeInUp");
+    div.onclick = ()=>selectOption(div,i);
+    optionsEl.appendChild(div);
+  });
+}
+
+function selectOption(element, i) {
+  let current = quiz[index];
+  let options = document.querySelectorAll(".option");
+
+  options.forEach((opt,idx)=>{
+    opt.onclick = null;
+    if(idx === current.a) opt.classList.add("correct");
+  });
+
+  if(i === current.a) {
+    score++;
+  } else {
+    element.classList.add("wrong");
+  }
+
+  nextBtn.disabled = false;
+}
+
+nextBtn.onclick = ()=>{
+  index++;
+  if(index < quiz.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+};
+
+function showResult() {
+  let feedback = "";
+  if(score === 10) feedback = "¡Perfecto! 🏆";
+  else if(score >= 7) feedback = "Muy bien 👍";
+  else if(score >= 5) feedback = "Bien, pero puedes mejorar 🙂";
+  else feedback = "Sigue practicando 💪";
+
+  document.querySelector(".container").innerHTML = `
+    <h2 class='animate__animated animate__bounceIn'>Resultado</h2>
+    <p>Obtuviste ${score} de 10</p>
+    <p>${feedback}</p>
+  `;
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
